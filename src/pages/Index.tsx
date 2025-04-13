@@ -33,29 +33,94 @@ const Index = () => {
     // Analyze the prompt content
     const hasQuestion = prompt.includes("?");
     const wordCount = prompt.split(/\s+/).length;
-    const containsTechnicalTerms = /\b(api|code|programming|algorithm|database|function|variable)\b/i.test(prompt);
+    const containsTechnicalTerms = /\b(api|code|programming|algorithm|database|function|variable|develop|software|app|application)\b/i.test(prompt);
     const containsCreativeTerms = /\b(story|write|creative|imagine|design|art|character)\b/i.test(prompt);
     const containsAnalyticalTerms = /\b(analyze|compare|contrast|evaluate|assess|explain|why|how)\b/i.test(prompt);
     
-    // Add specificity based on prompt type
+    // Check if this is a build/create type request
+    const isBuildRequest = /\b(build|create|develop|make|construct|implement|set up)\b/i.test(prompt);
+    const isProductRequest = /\b(product|app|application|website|platform|system|tool|service)\b/i.test(prompt);
+    
+    // PRD format for build requests
+    if (isBuildRequest && isProductRequest) {
+      enhanced = `# Project Requirement Document (PRD)
+
+## Overview
+${prompt}
+
+## Objectives
+Please provide detailed objectives for this ${/\b(app|application|website|platform|system|tool|service)\b/i.exec(prompt)?.[0] || "product"}, including:
+- Primary goal
+- Target audience
+- Key problems it solves
+
+## Functional Requirements
+1. Core Features (must-have)
+   - 
+   - 
+   - 
+
+2. Secondary Features (nice-to-have)
+   - 
+   - 
+
+## Technical Specifications
+- Recommended tech stack
+- Integration requirements
+- Security considerations
+- Performance requirements
+
+## User Experience
+- User flow
+- Key user stories
+- Design principles to follow
+
+## Timeline and Milestones
+- Suggested development phases
+- Key deliverables for each phase
+
+## Success Metrics
+- How to measure the success of this project
+- KPIs to track
+
+Please provide comprehensive details for each section above, maintaining a professional, strategic tone throughout the document.`;
+      
+      return enhanced;
+    }
+    
+    // Technical domain customization
     if (containsTechnicalTerms) {
-      enhanced += " Include specific code examples, step-by-step explanations, and best practices. Consider edge cases and performance implications.";
-    } else if (containsCreativeTerms) {
-      enhanced += " Use vivid descriptions, sensory details, and emotional elements. Create memorable characters and settings with distinct characteristics.";
-    } else if (containsAnalyticalTerms) {
-      enhanced += " Provide multiple perspectives, relevant data points, and logical frameworks. Consider counterarguments and limitations of the analysis.";
-    } else if (wordCount < 8) {
-      enhanced += " Please expand on this topic with comprehensive details and specific examples.";
+      if (hasQuestion) {
+        enhanced += " Please provide a detailed technical explanation with code examples where appropriate. Consider edge cases, performance implications, and industry best practices. If applicable, include implementation alternatives with pros and cons of each approach.";
+      } else if (isBuildRequest) {
+        enhanced += " Please provide a detailed technical implementation plan, including architecture considerations, technology stack recommendations, potential challenges, and implementation steps. Include code snippets or pseudocode where appropriate.";
+      } else {
+        enhanced += " Include specific code examples, step-by-step explanations, and best practices. Consider edge cases and performance implications.";
+      }
+    } 
+    // Creative domain customization
+    else if (containsCreativeTerms) {
+      enhanced += " Use vivid descriptions, sensory details, and emotional elements. Create memorable characters and settings with distinct characteristics. Consider narrative structure, pacing, and thematic development.";
+    } 
+    // Analytical domain customization
+    else if (containsAnalyticalTerms) {
+      enhanced += " Provide multiple perspectives, relevant data points, and logical frameworks. Consider counterarguments, limitations of the analysis, and practical implications of conclusions.";
+    } 
+    // General enhancement for short prompts
+    else if (wordCount < 8) {
+      enhanced += " Please expand on this topic with comprehensive details, specific examples, and practical applications. Consider different perspectives and contexts.";
     }
     
     // Add tone guidance if not specified
     if (!enhanced.toLowerCase().includes("tone") && !enhanced.toLowerCase().includes("style")) {
       if (containsTechnicalTerms) {
-        enhanced += " Use a clear, precise, and technically accurate tone.";
+        enhanced += " Use a clear, precise, and technically accurate tone that balances detail with readability.";
       } else if (containsCreativeTerms) {
-        enhanced += " Use an engaging, descriptive, and imaginative tone.";
+        enhanced += " Use an engaging, descriptive, and imaginative tone that evokes emotion and sensory experiences.";
       } else if (hasQuestion) {
-        enhanced += " Provide a thorough, educational response that builds understanding step by step.";
+        enhanced += " Provide a thorough, educational response that builds understanding step by step, using a conversational yet authoritative tone.";
+      } else if (isBuildRequest) {
+        enhanced += " Use a professional, strategic tone appropriate for business stakeholders and technical implementers alike.";
       } else {
         enhanced += " Use a professional yet conversational tone that balances expertise with accessibility.";
       }
@@ -64,11 +129,13 @@ const Index = () => {
     // Add structure guidance based on content type
     if (!enhanced.toLowerCase().includes("structure") && !enhanced.toLowerCase().includes("format")) {
       if (wordCount > 15 || containsAnalyticalTerms) {
-        enhanced += " Structure the response with clear headings, subheadings, and bullet points where appropriate.";
+        enhanced += " Structure the response with clear headings, subheadings, and bullet points where appropriate to enhance readability and information hierarchy.";
       } else if (containsTechnicalTerms) {
-        enhanced += " Format with clear sections including context, explanation, code examples, and practical applications.";
+        enhanced += " Format with clear sections including context, explanation, code examples, practical applications, and further resources.";
       } else if (containsCreativeTerms) {
-        enhanced += " Organize the content with a clear narrative flow including introduction, development, and resolution.";
+        enhanced += " Organize the content with a clear narrative flow including introduction, development, and resolution, with attention to pacing and transitions.";
+      } else if (isBuildRequest) {
+        enhanced += " Structure the response with distinct sections covering requirements, implementation details, timeline considerations, and expected outcomes.";
       }
     }
     
