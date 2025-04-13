@@ -2,11 +2,14 @@
 import React, { useState } from "react";
 import PromptInput from "@/components/PromptInput";
 import EnhancedOutput from "@/components/EnhancedOutput";
-import { Sparkles, Zap } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Sparkles, Zap, ArrowRight, Lightbulb } from "lucide-react";
 
 const Index = () => {
   const [enhancedPrompt, setEnhancedPrompt] = useState<string | null>(null);
   const [isEnhancing, setIsEnhancing] = useState(false);
+  const [showTool, setShowTool] = useState(false);
 
   const enhancePrompt = async (prompt: string) => {
     setIsEnhancing(true);
@@ -224,43 +227,120 @@ Please provide comprehensive details for each section above, maintaining a profe
   };
 
   return (
-    <div className="min-h-screen flex flex-col py-12 px-4 sm:px-6">
-      <div className="prompt-container">
-        <header className="text-center mb-10">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Zap size={32} className="text-accent" />
-            <h1 className="text-3xl md:text-4xl font-bold gradient-text">
-              AI Prompt Enhancer
-            </h1>
-            <Sparkles size={32} className="text-primary" />
-          </div>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Transform your basic prompts into powerful instructions that generate better AI responses.
-          </p>
-        </header>
-        
-        <main className="space-y-8">
-          <PromptInput onEnhance={enhancePrompt} isEnhancing={isEnhancing} />
-          <EnhancedOutput enhancedPrompt={enhancedPrompt} />
-          
-          {!enhancedPrompt && (
-            <div className="mt-10 p-6 border border-dashed border-muted-foreground/30 rounded-lg bg-secondary/50">
-              <h2 className="text-lg font-medium mb-2">Tips for effective prompts:</h2>
-              <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                <li>Be specific about what you want the AI to do</li>
-                <li>Specify the tone, style, or format you prefer</li>
-                <li>Include relevant context or background information</li>
-                <li>Break complex requests into clear steps</li>
-                <li>Use examples to illustrate what you're looking for</li>
-              </ul>
+    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/30">
+      {!showTool ? (
+        <div className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-12 text-center">
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-6 flex items-center justify-center gap-3">
+              <Sparkles size={40} className="text-accent animate-pulse" />
+              <h1 className="text-5xl md:text-6xl font-bold gradient-text">
+                AI Prompt Enhancer
+              </h1>
+              <Zap size={40} className="text-primary animate-pulse" />
             </div>
-          )}
-        </main>
-        
-        <footer className="mt-16 text-center text-muted-foreground">
-          <p>© 2025 AI Prompt Enhancer. All rights reserved.</p>
-        </footer>
-      </div>
+            
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-8">
+              Transform your basic prompts into powerful instructions that generate 
+              <span className="text-primary font-semibold"> exceptional AI responses</span>.
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-12">
+              <Card className="bg-secondary/50 border-accent/20 shadow-lg hover:shadow-xl transition-all">
+                <CardContent className="p-6 flex flex-col items-center text-center">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <Zap size={24} className="text-primary" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Enhanced Clarity</h3>
+                  <p className="text-muted-foreground">
+                    Transform vague ideas into clear, structured instructions for AI
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-secondary/50 border-primary/20 shadow-lg hover:shadow-xl transition-all">
+                <CardContent className="p-6 flex flex-col items-center text-center">
+                  <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mb-4">
+                    <Sparkles size={24} className="text-accent" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Better Results</h3>
+                  <p className="text-muted-foreground">
+                    Get more detailed, accurate, and helpful responses from AI tools
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-secondary/50 border-accent/20 shadow-lg hover:shadow-xl transition-all">
+                <CardContent className="p-6 flex flex-col items-center text-center">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <Lightbulb size={24} className="text-primary" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Smart Analysis</h3>
+                  <p className="text-muted-foreground">
+                    Automatically detects your intent and optimizes prompts accordingly
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <Button 
+              onClick={() => setShowTool(true)}
+              size="lg" 
+              className="enhance-button px-8 py-6 rounded-xl text-lg font-semibold mt-6 group"
+            >
+              Start Enhancing Your Prompts 
+              <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+            </Button>
+            
+            <p className="mt-4 text-muted-foreground">
+              Turn simple prompts into powerful AI instructions in seconds
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="prompt-container py-12 px-4 sm:px-6">
+          <header className="text-center mb-10">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Zap size={32} className="text-accent" />
+              <h1 className="text-3xl md:text-4xl font-bold gradient-text">
+                AI Prompt Enhancer
+              </h1>
+              <Sparkles size={32} className="text-primary" />
+            </div>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Transform your basic prompts into powerful instructions that generate better AI responses.
+            </p>
+          </header>
+          
+          <main className="space-y-8">
+            <PromptInput onEnhance={enhancePrompt} isEnhancing={isEnhancing} />
+            <EnhancedOutput enhancedPrompt={enhancedPrompt} />
+            
+            {!enhancedPrompt && (
+              <div className="mt-10 p-6 border border-dashed border-muted-foreground/30 rounded-lg bg-secondary/50">
+                <h2 className="text-lg font-medium mb-2">Tips for effective prompts:</h2>
+                <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                  <li>Be specific about what you want the AI to do</li>
+                  <li>Specify the tone, style, or format you prefer</li>
+                  <li>Include relevant context or background information</li>
+                  <li>Break complex requests into clear steps</li>
+                  <li>Use examples to illustrate what you're looking for</li>
+                </ul>
+              </div>
+            )}
+          </main>
+          
+          <footer className="mt-16 text-center text-muted-foreground">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowTool(false)}
+              className="mb-4"
+            >
+              Back to Home
+            </Button>
+            <p>© 2025 AI Prompt Enhancer. All rights reserved.</p>
+          </footer>
+        </div>
+      )}
     </div>
   );
 };
