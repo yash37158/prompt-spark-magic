@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Clipboard, ClipboardCheck } from "lucide-react";
+import { Clipboard, ClipboardCheck, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface EnhancedOutputProps {
@@ -31,9 +31,12 @@ const EnhancedOutput: React.FC<EnhancedOutputProps> = ({ enhancedPrompt }) => {
   if (!enhancedPrompt) return null;
 
   return (
-    <Card className="mt-8 border-2 border-accent/30 shadow-md">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-lg font-semibold">Enhanced Prompt</CardTitle>
+    <Card className="mt-8 border-2 border-accent/30 shadow-lg transition-all duration-300 hover:shadow-accent/20">
+      <CardHeader className="flex flex-row items-center justify-between pb-2 bg-gradient-to-r from-primary/10 to-accent/10 rounded-t-lg">
+        <div className="flex items-center gap-2">
+          <Sparkles className="text-accent" size={20} />
+          <CardTitle className="text-xl font-semibold gradient-text">Enhanced Prompt</CardTitle>
+        </div>
         <Button
           variant="ghost"
           size="sm"
@@ -49,9 +52,15 @@ const EnhancedOutput: React.FC<EnhancedOutputProps> = ({ enhancedPrompt }) => {
           <span className="ml-2">{copied ? "Copied!" : "Copy"}</span>
         </Button>
       </CardHeader>
-      <CardContent className="pt-4">
-        <div className="bg-secondary p-4 rounded-md whitespace-pre-wrap">
+      <CardContent className="pt-6 pb-6">
+        <div className="bg-secondary/80 p-6 rounded-md whitespace-pre-wrap text-lg leading-relaxed shadow-inner border border-accent/10">
           {enhancedPrompt}
+        </div>
+        <div className="mt-4 text-sm text-muted-foreground px-2">
+          <p className="flex items-center gap-1">
+            <Sparkles className="text-accent" size={14} />
+            This enhanced prompt is designed to generate higher quality AI responses
+          </p>
         </div>
       </CardContent>
     </Card>

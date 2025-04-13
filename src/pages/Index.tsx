@@ -15,7 +15,7 @@ const Index = () => {
       // Simulate API call with a delay
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // This is a simple enhancement logic - in a real app, you'd call an AI API
+      // Enhanced prompt generation logic
       const enhanced = enhancePromptLogic(prompt);
       setEnhancedPrompt(enhanced);
     } catch (error) {
@@ -25,34 +25,56 @@ const Index = () => {
     }
   };
 
-  // Simple enhancement logic - this would be replaced with an actual AI API call
+  // More dynamic prompt enhancement logic
   const enhancePromptLogic = (prompt: string): string => {
-    // Basic enhancements
+    // Original prompt as base
     let enhanced = prompt;
     
-    // Add more specificity
-    if (!enhanced.includes("detailed")) {
-      enhanced = enhanced.replace(/\.$/, ", with detailed descriptions.");
+    // Analyze the prompt content
+    const hasQuestion = prompt.includes("?");
+    const wordCount = prompt.split(/\s+/).length;
+    const containsTechnicalTerms = /\b(api|code|programming|algorithm|database|function|variable)\b/i.test(prompt);
+    const containsCreativeTerms = /\b(story|write|creative|imagine|design|art|character)\b/i.test(prompt);
+    const containsAnalyticalTerms = /\b(analyze|compare|contrast|evaluate|assess|explain|why|how)\b/i.test(prompt);
+    
+    // Add specificity based on prompt type
+    if (containsTechnicalTerms) {
+      enhanced += " Include specific code examples, step-by-step explanations, and best practices. Consider edge cases and performance implications.";
+    } else if (containsCreativeTerms) {
+      enhanced += " Use vivid descriptions, sensory details, and emotional elements. Create memorable characters and settings with distinct characteristics.";
+    } else if (containsAnalyticalTerms) {
+      enhanced += " Provide multiple perspectives, relevant data points, and logical frameworks. Consider counterarguments and limitations of the analysis.";
+    } else if (wordCount < 8) {
+      enhanced += " Please expand on this topic with comprehensive details and specific examples.";
     }
     
-    // Add tone if not specified
+    // Add tone guidance if not specified
     if (!enhanced.toLowerCase().includes("tone") && !enhanced.toLowerCase().includes("style")) {
-      enhanced += " Use a professional and engaging tone.";
+      if (containsTechnicalTerms) {
+        enhanced += " Use a clear, precise, and technically accurate tone.";
+      } else if (containsCreativeTerms) {
+        enhanced += " Use an engaging, descriptive, and imaginative tone.";
+      } else if (hasQuestion) {
+        enhanced += " Provide a thorough, educational response that builds understanding step by step.";
+      } else {
+        enhanced += " Use a professional yet conversational tone that balances expertise with accessibility.";
+      }
     }
     
-    // Add length guidance if not present
-    if (!enhanced.toLowerCase().includes("word") && !enhanced.toLowerCase().includes("length")) {
-      enhanced += " Aim for a comprehensive response with adequate depth.";
-    }
-    
-    // Add structure guidance
+    // Add structure guidance based on content type
     if (!enhanced.toLowerCase().includes("structure") && !enhanced.toLowerCase().includes("format")) {
-      enhanced += " Structure the response with clear sections and bullet points where appropriate.";
+      if (wordCount > 15 || containsAnalyticalTerms) {
+        enhanced += " Structure the response with clear headings, subheadings, and bullet points where appropriate.";
+      } else if (containsTechnicalTerms) {
+        enhanced += " Format with clear sections including context, explanation, code examples, and practical applications.";
+      } else if (containsCreativeTerms) {
+        enhanced += " Organize the content with a clear narrative flow including introduction, development, and resolution.";
+      }
     }
     
-    // Add examples request if not present
-    if (!enhanced.toLowerCase().includes("example")) {
-      enhanced += " Include relevant examples to illustrate key points.";
+    // Add examples request if complex topic
+    if (wordCount > 10 && !enhanced.toLowerCase().includes("example")) {
+      enhanced += " Include relevant examples to illustrate key points and aid understanding.";
     }
     
     return enhanced;
