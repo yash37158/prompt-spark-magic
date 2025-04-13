@@ -27,32 +27,90 @@ const Index = () => {
 
   // More dynamic prompt enhancement logic
   const enhancePromptLogic = (prompt: string): string => {
-    // Original prompt as base
-    let enhanced = prompt;
+    // Detect content type and user intent
+    const contentAnalysis = analyzeContent(prompt);
     
-    // Analyze the prompt content
-    const hasQuestion = prompt.includes("?");
+    // Choose enhancement strategy based on content analysis
+    if (contentAnalysis.isBuildRequest) {
+      return generatePRD(prompt, contentAnalysis);
+    } else if (contentAnalysis.isQuestion) {
+      return enhanceQuestion(prompt, contentAnalysis);
+    } else if (contentAnalysis.isCreative) {
+      return enhanceCreative(prompt, contentAnalysis);
+    } else if (contentAnalysis.isTechnical) {
+      return enhanceTechnical(prompt, contentAnalysis);
+    } else {
+      return enhanceGeneral(prompt, contentAnalysis);
+    }
+  };
+  
+  // Analyze content to determine intent and characteristics
+  const analyzeContent = (prompt: string) => {
+    const lowerPrompt = prompt.toLowerCase();
     const wordCount = prompt.split(/\s+/).length;
-    const containsTechnicalTerms = /\b(api|code|programming|algorithm|database|function|variable|develop|software|app|application)\b/i.test(prompt);
-    const containsCreativeTerms = /\b(story|write|creative|imagine|design|art|character)\b/i.test(prompt);
-    const containsAnalyticalTerms = /\b(analyze|compare|contrast|evaluate|assess|explain|why|how)\b/i.test(prompt);
     
-    // Check if this is a build/create type request
+    // Intent detection
     const isBuildRequest = /\b(build|create|develop|make|construct|implement|set up)\b/i.test(prompt);
     const isProductRequest = /\b(product|app|application|website|platform|system|tool|service)\b/i.test(prompt);
+    const isQuestion = prompt.includes("?") || /^(how|what|why|when|where|who|which|can|could|would|will|does|do|is|are)\b/i.test(prompt);
     
-    // PRD format for build requests
-    if (isBuildRequest && isProductRequest) {
-      enhanced = `# Project Requirement Document (PRD)
+    // Content type detection
+    const isTechnical = /\b(api|code|programming|algorithm|database|function|variable|develop|software|app|application)\b/i.test(prompt) ||
+                        /\b(typescript|javascript|react|vue|angular|node|python|java|c#|azure|aws)\b/i.test(prompt);
+    const isCreative = /\b(story|write|creative|imagine|design|art|character|novel|plot|narrative)\b/i.test(prompt);
+    const isAnalytical = /\b(analyze|compare|contrast|evaluate|assess|explain|why|how)\b/i.test(prompt);
+    
+    // Specificity analysis
+    const isSpecific = wordCount > 15 || prompt.includes(",") || prompt.includes(";");
+    const hasToneSpecified = /\b(tone|style|voice|formal|informal|professional|casual|technical|simple)\b/i.test(prompt);
+    const hasAudience = /\b(audience|reader|viewer|user|customer|client|stakeholder)\b/i.test(prompt);
+    
+    // Product type detection (for build requests)
+    let productType = "product";
+    if (isProductRequest) {
+      const productMatches = /\b(app|application|website|platform|system|tool|service|dashboard|api|game|mobile app)\b/i.exec(prompt);
+      if (productMatches && productMatches[0]) {
+        productType = productMatches[0].toLowerCase();
+      }
+    }
+    
+    // Domain detection
+    const domainMatches = /\b(healthcare|finance|education|retail|e-commerce|entertainment|social media|productivity|enterprise|gaming)\b/i.exec(prompt);
+    const domain = domainMatches ? domainMatches[0].toLowerCase() : null;
+    
+    return {
+      wordCount,
+      isQuestion,
+      isBuildRequest,
+      isProductRequest,
+      isTechnical,
+      isCreative,
+      isAnalytical,
+      isSpecific,
+      hasToneSpecified,
+      hasAudience,
+      productType,
+      domain,
+      originalPrompt: prompt
+    };
+  };
+  
+  // Generate PRD for build requests
+  const generatePRD = (prompt: string, analysis: any): string => {
+    const productType = analysis.productType;
+    const domain = analysis.domain || "your industry";
+    
+    return `# Project Requirement Document (PRD)
 
 ## Overview
 ${prompt}
 
 ## Objectives
-Please provide detailed objectives for this ${/\b(app|application|website|platform|system|tool|service)\b/i.exec(prompt)?.[0] || "product"}, including:
+Please provide detailed objectives for this ${productType}, including:
 - Primary goal
-- Target audience
-- Key problems it solves
+- Target audience in ${domain} 
+- Key problems it solves for users
+- Unique value proposition
 
 ## Functional Requirements
 1. Core Features (must-have)
@@ -65,83 +123,101 @@ Please provide detailed objectives for this ${/\b(app|application|website|platfo
    - 
 
 ## Technical Specifications
-- Recommended tech stack
-- Integration requirements
-- Security considerations
-- Performance requirements
+- Recommended tech stack for this ${productType}
+- Integration requirements with existing systems
+- Security considerations for ${domain}
+- Performance requirements and metrics
 
 ## User Experience
-- User flow
-- Key user stories
-- Design principles to follow
+- User flow for primary interactions
+- Key user stories (As a ___, I want to ___, so that ___)
+- Design principles to follow for ${domain} ${productType}s
+- Accessibility considerations
+
+## Data Management
+- Data storage requirements
+- Data processing needs
+- Privacy considerations for ${domain}
 
 ## Timeline and Milestones
 - Suggested development phases
 - Key deliverables for each phase
+- Critical path items
 
 ## Success Metrics
-- How to measure the success of this project
-- KPIs to track
+- How to measure the success of this ${productType}
+- KPIs to track specific to ${domain}
+- User adoption strategies
+
+## Risk Assessment
+- Potential challenges specific to ${domain}
+- Mitigation strategies
+- Alternative approaches
 
 Please provide comprehensive details for each section above, maintaining a professional, strategic tone throughout the document.`;
-      
-      return enhanced;
+  };
+  
+  // Enhance questions
+  const enhanceQuestion = (prompt: string, analysis: any): string => {
+    let enhanced = prompt;
+    
+    if (analysis.isTechnical) {
+      enhanced += "\n\nPlease provide a detailed technical explanation with code examples where appropriate. Consider:\n- Step-by-step breakdown of the solution\n- Edge cases and how to handle them\n- Performance implications and optimization strategies\n- Industry best practices and standards\n- Alternative approaches with pros and cons";
+    } else if (analysis.isCreative) {
+      enhanced += "\n\nPlease explore this question from multiple creative perspectives. Consider:\n- Different interpretations of the question\n- Diverse viewpoints and approaches\n- Concrete examples and scenarios\n- Underlying principles and patterns\n- Innovative or unconventional angles";
+    } else if (analysis.isAnalytical) {
+      enhanced += "\n\nPlease provide an in-depth analysis with:\n- Comprehensive examination of relevant factors\n- Evidence-based arguments from credible sources\n- Evaluation of different perspectives\n- Logical reasoning and frameworks\n- Real-world implications and applications";
+    } else {
+      enhanced += "\n\nPlease provide a thorough response that includes:\n- Clear, direct answer to the question\n- Supporting context and background information\n- Concrete examples or illustrations\n- Nuances or caveats to consider\n- Further questions to explore if relevant";
     }
     
-    // Technical domain customization
-    if (containsTechnicalTerms) {
-      if (hasQuestion) {
-        enhanced += " Please provide a detailed technical explanation with code examples where appropriate. Consider edge cases, performance implications, and industry best practices. If applicable, include implementation alternatives with pros and cons of each approach.";
-      } else if (isBuildRequest) {
-        enhanced += " Please provide a detailed technical implementation plan, including architecture considerations, technology stack recommendations, potential challenges, and implementation steps. Include code snippets or pseudocode where appropriate.";
-      } else {
-        enhanced += " Include specific code examples, step-by-step explanations, and best practices. Consider edge cases and performance implications.";
-      }
-    } 
-    // Creative domain customization
-    else if (containsCreativeTerms) {
-      enhanced += " Use vivid descriptions, sensory details, and emotional elements. Create memorable characters and settings with distinct characteristics. Consider narrative structure, pacing, and thematic development.";
-    } 
-    // Analytical domain customization
-    else if (containsAnalyticalTerms) {
-      enhanced += " Provide multiple perspectives, relevant data points, and logical frameworks. Consider counterarguments, limitations of the analysis, and practical implications of conclusions.";
-    } 
-    // General enhancement for short prompts
-    else if (wordCount < 8) {
-      enhanced += " Please expand on this topic with comprehensive details, specific examples, and practical applications. Consider different perspectives and contexts.";
+    if (!analysis.hasToneSpecified) {
+      enhanced += "\n\nPlease use a conversational yet informative tone, balancing accessibility with depth of expertise.";
     }
     
-    // Add tone guidance if not specified
-    if (!enhanced.toLowerCase().includes("tone") && !enhanced.toLowerCase().includes("style")) {
-      if (containsTechnicalTerms) {
-        enhanced += " Use a clear, precise, and technically accurate tone that balances detail with readability.";
-      } else if (containsCreativeTerms) {
-        enhanced += " Use an engaging, descriptive, and imaginative tone that evokes emotion and sensory experiences.";
-      } else if (hasQuestion) {
-        enhanced += " Provide a thorough, educational response that builds understanding step by step, using a conversational yet authoritative tone.";
-      } else if (isBuildRequest) {
-        enhanced += " Use a professional, strategic tone appropriate for business stakeholders and technical implementers alike.";
-      } else {
-        enhanced += " Use a professional yet conversational tone that balances expertise with accessibility.";
-      }
+    return enhanced;
+  };
+  
+  // Enhance creative prompts
+  const enhanceCreative = (prompt: string, analysis: any): string => {
+    let enhanced = prompt;
+    
+    enhanced += "\n\nWhen creating this content, please include:\n- Vivid sensory details and descriptions\n- Well-developed characters with clear motivations and conflicts\n- Coherent narrative structure with satisfying pacing\n- Thematic depth and meaningful subtext\n- Engaging dialogue that reveals character and advances the story";
+    
+    if (!analysis.hasToneSpecified) {
+      enhanced += "\n\nPlease use an engaging, immersive style that draws the reader in and creates an emotional connection.";
     }
     
-    // Add structure guidance based on content type
-    if (!enhanced.toLowerCase().includes("structure") && !enhanced.toLowerCase().includes("format")) {
-      if (wordCount > 15 || containsAnalyticalTerms) {
-        enhanced += " Structure the response with clear headings, subheadings, and bullet points where appropriate to enhance readability and information hierarchy.";
-      } else if (containsTechnicalTerms) {
-        enhanced += " Format with clear sections including context, explanation, code examples, practical applications, and further resources.";
-      } else if (containsCreativeTerms) {
-        enhanced += " Organize the content with a clear narrative flow including introduction, development, and resolution, with attention to pacing and transitions.";
-      } else if (isBuildRequest) {
-        enhanced += " Structure the response with distinct sections covering requirements, implementation details, timeline considerations, and expected outcomes.";
-      }
+    return enhanced;
+  };
+  
+  // Enhance technical prompts
+  const enhanceTechnical = (prompt: string, analysis: any): string => {
+    let enhanced = prompt;
+    
+    enhanced += "\n\nWhen addressing this technical request, please include:\n- Clear, systematic explanation of concepts and processes\n- Practical code examples with comments explaining key parts\n- Best practices and optimization techniques\n- Common pitfalls and how to avoid them\n- Resources for further learning";
+    
+    if (!analysis.hasToneSpecified) {
+      enhanced += "\n\nPlease use a precise, accessible technical tone that balances detail with clarity.";
     }
     
-    // Add examples request if complex topic
-    if (wordCount > 10 && !enhanced.toLowerCase().includes("example")) {
-      enhanced += " Include relevant examples to illustrate key points and aid understanding.";
+    return enhanced;
+  };
+  
+  // Enhance general prompts
+  const enhanceGeneral = (prompt: string, analysis: any): string => {
+    let enhanced = prompt;
+    
+    if (analysis.wordCount < 10) {
+      enhanced += "\n\nPlease provide a comprehensive response that includes:\n- Detailed explanation with clear context\n- Concrete examples or case studies\n- Different perspectives or approaches\n- Practical applications or implications\n- Relevant facts, data, or evidence";
+    }
+    
+    if (!analysis.hasToneSpecified) {
+      enhanced += "\n\nPlease use a balanced, informative tone that is engaging and accessible.";
+    }
+    
+    if (!analysis.isSpecific) {
+      enhanced += "\n\nPlease structure your response with clear sections and bullet points where appropriate to enhance readability.";
     }
     
     return enhanced;
