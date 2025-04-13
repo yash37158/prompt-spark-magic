@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,16 +14,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 255 70% 60%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96.1%;
+    --secondary: 260 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
+    --accent: 262 80% 70%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
@@ -30,7 +31,7 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 255 70% 60%;
 
     --radius: 0.5rem;
 
@@ -61,7 +62,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: 255 70% 60%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -70,7 +71,7 @@
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 262 80% 70%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
@@ -98,4 +99,32 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.prompt-container {
+  @apply max-w-3xl mx-auto w-full;
+}
+
+.enhance-button {
+  @apply bg-primary hover:bg-primary/90 text-white transition-all;
+}
+
+.enhance-button:hover {
+  @apply shadow-md shadow-primary/25 transform -translate-y-0.5;
+}
+
+.copy-button {
+  @apply text-accent hover:text-accent/90 transition-all;
+}
+
+.copy-button:hover {
+  @apply shadow-sm shadow-accent/15;
+}
+
+.gradient-text {
+  @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+}
+
+.textarea-gradient {
+  @apply focus-within:border-2 focus-within:border-accent/50 focus-within:shadow-lg focus-within:shadow-accent/20 transition-all duration-300;
 }
